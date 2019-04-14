@@ -1,0 +1,16 @@
+/* 
+  Localizable.strings
+  moviesnow
+
+  Created by Alfaro, Diego on 9/04/19.
+  Copyright © 2019 IQVIA. All rights reserved.
+*/
+
+
+"appName" = "Movies Now!";
+
+//Dialog Options
+"loading" = "Loading...";
+"errorInternet" = "Connectivity error. Please check your Internet connection";
+"ok" = "Aceptar";
+"cancel" = "Cancelar";
