@@ -27,37 +27,42 @@ class HomeViewController: UIViewController,
         super.viewDidLoad()
         
         loadNavigationBar()
-        loadMovies()
+        loadData()
     }
     
     func loadNavigationBar() {
         NavigationPresenter.createNavigationBar(for: self)
     }
     
-    func loadMovies() {
+    func loadData() {
         ifReachable { _ in
             DialogPresenter.showLoading(in: self.view)
-            MovieLogic.listar { result in
-                if result != nil {
-                    self.movies.append(contentsOf: result!)
+            MovieLogic.obtener(keywords: self.keywords, completion: { result in
+                if result.count > 0 {
+                    self.movies.append(contentsOf: result)
                     self.tblMovies.reloadData()
                 }
                 
                 DialogPresenter.hideLoading(in: self.view)
-            }
+            })
         }
     }
     
-    func searchMovies() {
+    func populateList(isNewSearch: Bool) {
         ifReachable { _ in
             DialogPresenter.showLoading(in: nil)
-            MovieLogic.buscar(keyword: self.keywords) { result in
-                //fill movies with RESULT
-                self.movies = result
-                self.tblMovies.reloadData()
+            MovieLogic.obtener(keywords: self.keywords, completion: { result in
+                if result.count > 0 {
+                    if isNewSearch {
+                        self.movies = []
+                    }
+                    
+                    self.movies.append(contentsOf: result)
+                    self.tblMovies.reloadData()
+                }
                 
                 DialogPresenter.hideLoading(in: nil)
-            }
+            })
         }
     }
     
@@ -83,7 +88,7 @@ class HomeViewController: UIViewController,
     //SearchBar Methods
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         keywords = searchText
-        searchMovies()
+        populateList(isNewSearch: true)
     }
 
     //TableView Methods
@@ -95,7 +100,7 @@ class HomeViewController: UIViewController,
         let movie = movies[indexPath.row]
         
         if indexPath.row == movies.count - 1 {
-            loadMovies()
+            populateList(isNewSearch: false)
             return UITableViewCell()
         } else {
             return CellFactory.createMovieCell(tableView: tableView, indexPath: indexPath, movie: movie)

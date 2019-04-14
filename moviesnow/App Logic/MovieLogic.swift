@@ -14,6 +14,7 @@ class MovieLogic: NSObject {
         var title = ""
         var year = ""
         var overview = ""
+        var imageUrl = ""
         
         if let titleString = jsonObject["title"].string {
             title = titleString
@@ -24,34 +25,50 @@ class MovieLogic: NSObject {
         if let overviewString = jsonObject["overview"].string {
             overview = overviewString
         }
+        if let id = jsonObject["ids"]["tmdb"].string {
+            imageUrl = id
+        }
         
-        return Movie(title: title, year: year, overview: overview, pictureUrl: "")
+        return Movie(title: title, year: year, overview: overview, pictureUrl: imageUrl)
     }
     
-    static func listar(completion: @escaping (_ result: [Movie]?) -> Void) {
+    static func obtener(keywords: String, completion: @escaping (_ result: [Movie]) -> Void) {
+        if keywords != "" {
+            buscar(keyword: keywords) { movies in
+                completion(movies)
+            }
+        } else {
+            listar { movies in
+                completion(movies)
+            }
+        }
+    }
+    
+    private static func listar(completion: @escaping (_ result: [Movie]) -> Void) {
         let page = UserSettings.getPageNumber()
         let limit = UserSettings.getPageLimit()
         
         //Make request
         MovieWorker.getMovies(keyword: "", page: page, limit: limit) { result in
+            var movies: [Movie] = []
+            
             if result != nil {
-                var movies: [Movie] = []
-                
-                for item in (result?.array)! {
-                    let movie = createMovie(jsonObject: item)
-                    movies.append(movie)
+                if let resultArray = result?.array {
+                    for item in resultArray {
+                        let movie = createMovie(jsonObject: item)
+                        movies.append(movie)
+                    }
                 }
                 
                 UserSettings.addPageNumber()
-                completion(movies)
-            } else {
-                completion(nil)
             }
+            
+            completion(movies)
             
         }
     }
     
-    static func buscar(keyword: String, completion: @escaping (_ result: [Movie]) -> Void) {
+    private static func buscar(keyword: String, completion: @escaping (_ result: [Movie]) -> Void) {
         let page = UserSettings.getPageNumber()
         let limit = UserSettings.getPageLimit()
         
@@ -61,19 +78,20 @@ class MovieLogic: NSObject {
         
         //Make request
         MovieWorker.getMovies(keyword: keyword, page: page, limit: limit) { result in
+            var movies: [Movie] = []
+            
             if result != nil {
-                var movies: [Movie] = []
-                
-                for item in (result?.array)! {
-                    let movie = createMovie(jsonObject: item["movie"])
-                    movies.append(movie)
+                if let resultArray = result?.array {
+                    for item in resultArray {
+                        let movie = createMovie(jsonObject: item["movie"])
+                        movies.append(movie)
+                    }
                 }
                 
                 UserSettings.addPageNumber()
-                completion(movies)
-            } else {
-                completion([Movie]())
             }
+            
+            completion(movies)
         }
     }
 }

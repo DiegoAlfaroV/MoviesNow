@@ -27,14 +27,14 @@ class MovieWorker: NSObject {
     static func getMovies(keyword: String?, page: Int, limit: Int, completion: @escaping (_ result: JSON?) -> Void) {
         var requestString = ""
         if keyword != nil && keyword! != "" {
-            requestString = apiPath + "search/movie?query=\(keyword!)&type=title,tagline"
+            requestString = apiPath + "search/movie?query=\(keyword!)&type=title,tagline&extended=full&"
         } else {
-            requestString = apiPath + "movies/popular?"
+            requestString = apiPath + "movies/popular?extended=full&"
         }
         
         requestString = requestString + "page=\(page)&limit=\(limit)"
         
-        let url = URL(string: requestString)
+        let url = URL(string: requestString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
         
         let headers = [
             "Content-Type": "application/json",
@@ -45,17 +45,13 @@ class MovieWorker: NSObject {
         Alamofire.request(url!, method: .get, parameters: nil,
                           encoding: JSONEncoding.default, headers: headers).responseSwiftyJSON { (response) in
                             
-                            /*
-                            if response.result.description == StringHelper.result.failure {
+                            if let error = response.error {
+                                print(error.localizedDescription)
                                 completion(nil)
                             } else {
                                 let jsonResponse = JSON(response.result.value!)
                                 completion(jsonResponse)
                             }
-                            */
-                            
-                            let jsonResponse = JSON(response.result.value!)
-                            completion(jsonResponse)
         }
     }
 }
