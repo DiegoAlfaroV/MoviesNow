@@ -13,7 +13,7 @@ class MovieCell: UITableViewCell {
     //UI Controls
     @IBOutlet weak var imgMovie: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var lblOverview: UITextView!
+    @IBOutlet weak var lblOverview: MarqueeTextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

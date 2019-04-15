@@ -34,7 +34,6 @@ class HomeViewController: UIViewController,
     
     func loadData() {
         DialogPresenter.showLoading(in: self.view)
-        MovieLogic.imageConfig()
             
         MovieLogic.obtener(keywords: self.keywords, completion: { result in
             if result.count > 0 {
@@ -67,6 +66,10 @@ class HomeViewController: UIViewController,
         keywords = searchText
         populateList(isNewSearch: true)
     }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
 
     //TableView Methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -78,11 +81,10 @@ class HomeViewController: UIViewController,
         
         if indexPath.row == movies.count - 1 {
             populateList(isNewSearch: false)
-            return UITableViewCell()
+            return CellFactory.createLoadingCell(tableView: tableView, indexPath: indexPath)
         } else {
             return CellFactory.createMovieCell(tableView: tableView, indexPath: indexPath, movie: movie)
         }
-        
     }
 }
 

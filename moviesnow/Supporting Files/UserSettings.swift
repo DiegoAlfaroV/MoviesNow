@@ -11,7 +11,7 @@ import UIKit
 class UserSettings: NSObject {
     private static var pageNumber: Int = 1
     private static let pageLimit: Int = 10
-    private static var imageBaseUrl: String = ""
+    private static var imageBaseUrl: String = "https://image.tmdb.org/t/p/w92"
     
     static func getPageLimit() -> Int {
         return pageLimit
