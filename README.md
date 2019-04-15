@@ -5,4 +5,4 @@ Sample movie listing app using the trakt.tv API
 - Display the currently 10 most popular movies
 - Scroll down pagination to load 10 more movies
 - Search by keyword
-
+- Gets movies poster using The Open Movie Database API
