@@ -10,15 +10,16 @@ import UIKit
 
 class Movie: NSObject {
     
-    init(title: String, year: String, overview: String, pictureUrl: String) {
+    init(title: String, year: String, overview: String, imageId: String) {
         self.title = title
         self.year = year
         self.overview = overview
-        self.pictureUrl = pictureUrl
+        self.imageId = imageId
     }
     
     var title: String?
     var year: String?
     var overview: String?
+    var imageId: String?
     var pictureUrl: String?
 }

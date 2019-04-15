@@ -8,8 +8,6 @@
 
 import UIKit
 
-import Reachability
-
 class HomeViewController: UIViewController,
                             UITableViewDelegate,
                             UITableViewDataSource,
@@ -35,54 +33,33 @@ class HomeViewController: UIViewController,
     }
     
     func loadData() {
-        ifReachable { _ in
-            DialogPresenter.showLoading(in: self.view)
-            MovieLogic.obtener(keywords: self.keywords, completion: { result in
-                if result.count > 0 {
-                    self.movies.append(contentsOf: result)
-                    self.tblMovies.reloadData()
-                }
+        DialogPresenter.showLoading(in: self.view)
+        MovieLogic.imageConfig()
+            
+        MovieLogic.obtener(keywords: self.keywords, completion: { result in
+            if result.count > 0 {
+                self.movies.append(contentsOf: result)
+                self.tblMovies.reloadData()
+            }
                 
-                DialogPresenter.hideLoading(in: self.view)
-            })
-        }
+            DialogPresenter.hideLoading(in: self.view)
+        })
     }
     
     func populateList(isNewSearch: Bool) {
-        ifReachable { _ in
-            DialogPresenter.showLoading(in: nil)
-            MovieLogic.obtener(keywords: self.keywords, completion: { result in
-                if result.count > 0 {
-                    if isNewSearch {
-                        self.movies = []
-                    }
-                    
-                    self.movies.append(contentsOf: result)
-                    self.tblMovies.reloadData()
+        DialogPresenter.showLoading(in: nil)
+        MovieLogic.obtener(keywords: self.keywords, completion: { result in
+            if result.count > 0 {
+                if isNewSearch {
+                    self.movies = []
                 }
+                    
+                self.movies.append(contentsOf: result)
+                self.tblMovies.reloadData()
+            }
                 
-                DialogPresenter.hideLoading(in: nil)
-            })
-        }
-    }
-    
-    //Change place to ???
-    func ifReachable(completion: @escaping (_ result: Bool) -> Void) {
-        let reachability = Reachability()
-        
-        do {
-            try reachability?.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-        
-        if reachability?.connection != Reachability.Connection.none {
-            completion(true)
-        } else {
-            DialogPresenter.showDialog(in: self, message: String.get(key: "errorInternet"))
-        }
-        
-        reachability?.stopNotifier()
+            DialogPresenter.hideLoading(in: nil)
+        })
     }
     
     //SearchBar Methods

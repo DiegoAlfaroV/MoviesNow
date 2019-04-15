@@ -14,7 +14,7 @@ class MovieLogic: NSObject {
         var title = ""
         var year = ""
         var overview = ""
-        var imageUrl = ""
+        var imageId = ""
         
         if let titleString = jsonObject["title"].string {
             title = titleString
@@ -25,11 +25,21 @@ class MovieLogic: NSObject {
         if let overviewString = jsonObject["overview"].string {
             overview = overviewString
         }
-        if let id = jsonObject["ids"]["tmdb"].string {
-            imageUrl = id
+        
+        print(jsonObject["ids"])
+        print(jsonObject["ids"].dictionary!["tmdb"]!)
+        
+        if let ids = jsonObject["ids"].dictionary {
+            if let id = ids["tmdb"]?.int {
+                imageId = "\(id)"
+            }
         }
         
-        return Movie(title: title, year: year, overview: overview, pictureUrl: imageUrl)
+        return Movie(title: title, year: year, overview: overview, imageId: imageId)
+    }
+    
+    static func imageConfig() {
+        
     }
     
     static func obtener(keywords: String, completion: @escaping (_ result: [Movie]) -> Void) {

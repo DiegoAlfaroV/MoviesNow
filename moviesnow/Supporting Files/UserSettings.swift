@@ -11,6 +11,7 @@ import UIKit
 class UserSettings: NSObject {
     private static var pageNumber: Int = 1
     private static let pageLimit: Int = 10
+    private static var imageBaseUrl: String = ""
     
     static func getPageLimit() -> Int {
         return pageLimit
@@ -25,6 +26,14 @@ class UserSettings: NSObject {
     }
 
     static func clearPageNumber() {
-        pageNumber = 0
+        pageNumber = 1
+    }
+    
+    static func setImageBaseUrl(baseUrl: String) {
+        imageBaseUrl = baseUrl
+    }
+    
+    static func getImageBaseUrl() -> String {
+        return imageBaseUrl
     }
 }

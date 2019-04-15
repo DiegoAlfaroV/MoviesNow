@@ -12,9 +12,12 @@ class CellFactory: NSObject {
     static func createMovieCell(tableView: UITableView, indexPath: IndexPath, movie: Movie) -> UITableViewCell {
         if let cell: MovieCell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath) as? MovieCell {
         
-            FileLogic.getFile(from: movie.pictureUrl!) { filePath in
-                if filePath != "" {
-                    cell.imgMovie.image = UIImage(named: filePath)
+            ImageWorker.getImage(id: movie.imageId!) { jsonImage in
+                movie.pictureUrl = "https://image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg"
+                FileLogic.getFile(from: movie.pictureUrl!) { filePath in
+                    if filePath != "" {
+                        cell.imgMovie.image = UIImage(named: filePath)
+                    }
                 }
             }
             

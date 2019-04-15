@@ -13,7 +13,7 @@ import SwiftyJSON
 import Alamofire_SwiftyJSON
 
 class MovieWorker: NSObject {
-    static let clientId = "b771548496e8fd043c2276b60b202b048afc137ba17064ea683cf7f518f8de8a"
+    static let apiKey = "b771548496e8fd043c2276b60b202b048afc137ba17064ea683cf7f518f8de8a"
     static let apiPath = "https://api.trakt.tv/"
     
     static func cancelRequests() {
@@ -23,35 +23,47 @@ class MovieWorker: NSObject {
             downloadTask.forEach { $0.cancel() }
         }
     }
-
-    static func getMovies(keyword: String?, page: Int, limit: Int, completion: @escaping (_ result: JSON?) -> Void) {
-        var requestString = ""
-        if keyword != nil && keyword! != "" {
-            requestString = apiPath + "search/movie?query=\(keyword!)&type=title,tagline&extended=full&"
-        } else {
-            requestString = apiPath + "movies/popular?extended=full&"
+    
+    static func isReachable() -> Bool {
+        if let reachability = NetworkReachabilityManager()?.isReachable {
+            return reachability
         }
         
-        requestString = requestString + "page=\(page)&limit=\(limit)"
-        
-        let url = URL(string: requestString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
-        
-        let headers = [
-            "Content-Type": "application/json",
-            "trakt-api-version": "2",
-            "trakt-api-key": clientId
-        ]
-        
-        Alamofire.request(url!, method: .get, parameters: nil,
-                          encoding: JSONEncoding.default, headers: headers).responseSwiftyJSON { (response) in
-                            
-                            if let error = response.error {
-                                print(error.localizedDescription)
-                                completion(nil)
-                            } else {
-                                let jsonResponse = JSON(response.result.value!)
-                                completion(jsonResponse)
-                            }
+        return false
+    }
+
+    static func getMovies(keyword: String?, page: Int, limit: Int, completion: @escaping (_ result: JSON?) -> Void) {
+        if isReachable() {
+            var requestString = ""
+            if keyword != nil && keyword! != "" {
+                requestString = apiPath + "search/movie?query=\(keyword!)&type=title,tagline&extended=full&"
+            } else {
+                requestString = apiPath + "movies/popular?extended=full&"
+            }
+            
+            requestString = requestString + "page=\(page)&limit=\(limit)"
+            
+            let url = URL(string: requestString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
+            
+            let headers = [
+                "Content-Type": "application/json",
+                "trakt-api-version": "2",
+                "trakt-api-key": apiKey
+            ]
+            
+            Alamofire.request(url!, method: .get, parameters: nil,
+                              encoding: JSONEncoding.default, headers: headers).responseSwiftyJSON { (response) in
+                                
+                                if let error = response.error {
+                                    print(error.localizedDescription)
+                                    completion(nil)
+                                } else {
+                                    let jsonResponse = JSON(response.result.value!)
+                                    completion(jsonResponse)
+                                }
+            }
+        } else {
+            completion(nil)
         }
     }
 }
